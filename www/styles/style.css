@@ -1,3 +1,6 @@
+@import url(./layout.css);
+
+/* MASTER STYLING */
 @import url(./whitespace-reset.css);
 
 /* global border-box sizing */
@@ -8,40 +11,8 @@ html {
 *, *::before, *::after {
   box-sizing: inherit;
 }
-/*****/
 
-/* 10x10 grid layout */
-.grid {
-  display: grid;
-  grid-template-rows: repeat(10 1fr);
-  grid-template-columns: repeat(10 1fr); 
-  gap: 10%;
-  justify-content: space-between;
-}
+/* SUBSECTION STYLING */
 
-.header {
-  grid-area: 1 / 1 / span 2 / span 9;
-  background-color: aquamarine;
-}
 
-.main {
-  grid-area: 3 / 2 / span 5 / span 7;
-  background-color: bisque;
-}
-
-.sidebar-left {
-  grid-area: 3 / 1 / span 5 / span 2;
-  background-color: brown;
-}
-
-.sidebar-right {
-  grid-area: 3 / 8 / span 5 / span 2;
-  background-color: darkblue;
-}
-
-.footer {
-  grid-area: 8 / 1 / span 2 / span 9;
-  background-color: darkmagenta;
-}
-/*****/
 

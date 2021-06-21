@@ -1,34 +1,53 @@
 import { Utils } from "./utils.js"
 export class APIAction {
-  constructor(baseUrl, endpoints) {
-    this.baseUrl = baseUrl;
-    this.endpoints = endpoints;
+  constructor(api) {
+    this.baseUrl = api.baseUrl;
+    this.endpoints = api.endpoints;
+    this.testData = api.testData;
   }
 
-  request(action, data, handler) {
-    action = this.endpoints[action];
+  request(action, handler, data) {
+    action = typeof action === 'string' ? this.endpoints[action] : action;
 
     let request = new XMLHttpRequest();
-    request.open(action.method, this.baseUrl + this.insertIds(action.path));
-
+    let url = this.baseUrl + this.insertIds(action.path, this.getIds(data));
+    
     if (data) {
       if (data instanceof FormData) {
         data = this.serializeForm(data, action.dataType);
       } else {
         data = this.serialize(data, action.dataType);
+        url += data;
       }
 
-      request.onload = handler;
-      request.send(data);
     }
     
+    request.open(action.method, url);
     request.onload = handler;
     request.send(data);
   }
 
-  insertIds(ids, path) {
-    let replacements = ids.slice();
-    return path.replace(/:id/g, (id) => replacements.shift());
+  testGetEndpoints(testData, handler) {
+    for (let point in this.endpoints) {
+      if (this.endpoints.hasOwnProperty(point)) {
+        if (this.endpoints[point].method === 'GET') {
+          this.request(point, handler, testData[point]);
+        }
+      }
+    }
+  }
+
+  insertIds(path, ids) {
+    if (ids) {
+      let replacements = ids.slice();
+      return path.replace(/:id/g, (id) => replacements.shift());
+    } else {
+      return path;
+    }  
+  }
+
+  getIds(data) {
+    return data ? data.ids : null;
   }
 
   serializeForm(data, dataType) {
@@ -38,8 +57,8 @@ export class APIAction {
         data = JSON.stringify(data);
         return data;
       case 'query':
-        data = new URLSearchParams(data);
-        return data;
+        data = new URLSearchParams(data).toString();
+        return '?' + data;
     }
   }
 
@@ -52,8 +71,8 @@ export class APIAction {
         data = JSON.stringify(data);
         return data;
       case 'query':
-        data = new URLSearchParams(data);
-        return data;
+        data = new URLSearchParams(data).toString();
+        return '?' + data;
     }
   }
 }

@@ -1,0 +1,48 @@
+/* master layout */
+.body {
+  display: grid;
+  grid-template-areas:
+  "header header header"
+  "sidebar-left main sidebar-right"
+  "footer footer footer";
+  grid-template-columns: 2fr 8fr 2fr;
+  grid-template-rows: 2fr 6fr 2fr;
+  gap: 10px; 
+}
+
+.header {
+  grid-area: header;
+  display: grid;
+}
+
+.main {
+  grid-area: main;
+  display: grid;
+}
+
+.sidebar-left {
+  grid-area: sidebar-left;
+  display: grid;
+}
+
+.sidebar-right {
+  grid-area: sidebar-right;
+  display: grid;
+}
+
+.footer {
+  grid-area: footer;
+  display: grid;
+}
+
+.form {
+  grid-area: form;
+  display: grid;
+}
+
+.modal {
+  grid-area: modal;
+  display: grid;
+}
+
+/* sub layouts */

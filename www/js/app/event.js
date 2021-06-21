@@ -1,21 +1,39 @@
 export class EventAction {
+  static parse(data, dataType) {
+    switch (dataType) {
+      case 'json':
+        data = JSON.parse(data);
+        return data;
+      default:
+        return data;
+    } 
+  }
+
   constructor() {
     this.handlers = this.getHandlers();
   }
 
   getHandlers() {
     return {
-      alertType: this.alertType,
+      test: this.test,
+      renderTemplateToElement: this.renderTemplateToElement,
     }
   }
 
-  alertType(e) {
-    alert(e.type);
+  // handler(e, template) {
+  //   let data = e.target.response;
+  //   data = EventAction.parse(data, 'json');
+  //   return data;
+  // }
+  renderTemplateToElement(e, template, contextName, element) {
+    let data = e.target.response;
+    data = EventAction.parse(data, 'json');
+    let context = {};
+    context[contextName] = data;
+    element.innerHTML = template(context);
   }
-  parse(data) {
-    data = JSON.parse(data);
-    return data;
+  test(e) {
+    console.log(e.currentTarget.status);
   }
-
-
+  
 }
