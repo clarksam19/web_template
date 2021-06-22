@@ -12,6 +12,7 @@ export class EventAction {
 
   constructor() {
     this.handlers = this.getHandlers();
+    this.progressHandlers = this.getProgressHandlers();
   }
 
 // Store all event handlers for access in application
@@ -20,6 +21,18 @@ export class EventAction {
       logStatus: this.logStatus,
       initElementFromResponse: this.initElementFromResponse,
       updateMainWithJoke: this.updateMainWithJoke,
+    }
+  }
+
+  getProgressHandlers() {
+    return {
+      logLoadStart: this.logLoadStart,
+      logLoadReadyStateChange: this.logLoadReadyStateChange,
+      logLoadProgress: this.logLoadProgress,
+      logLoadError: this.logLoadError,
+      logLoadAbort: this.logLoadAbort,
+      logLoadTimeout: this.logLoadTimeout,
+      logLoadEnd: this.logLoadEnd,
     }
   }
 
@@ -32,15 +45,44 @@ export class EventAction {
     element.innerHTML = template(info.context);
   }
 
-// EVENT HANDLERS FOR TESTING
+// EVENT HANDLERS FOR TESTING API ENDPOINTS
 
 // Basic example
   logStatus(e) {
     console.log(e.currentTarget.status);
   }
 
+// REQUEST PROGRESS EVENT HANDLERS (besides onload)
 
-// APPLICATION-SPECIFIC EVENT HANDLERS
+  logLoadStart(e) {
+    console.log('Load Started');
+    console.log(e);
+  }
+  logLoadReadyStateChange(e) {
+    console.log('Readystate Changed');
+    console.log(e);
+  }
+  logLoadProgress(e) {
+    console.log('Load Progressing');
+    console.log(e);
+  }
+  logLoadError(e) {
+    console.log('Load Error');
+    console.log(e);
+  }
+  logLoadAbort(e) {
+    console.log('Load Aborted');
+    console.log(e);
+  }
+  logLoadTimeout(e) {
+    console.log('Load Timed Out');
+    console.log(e);
+  }
+  logLoadEnd(e) {
+    console.log('Load Has Ended');
+    console.log(e);
+  }
+// ONLOAD EVENT HANDLERS
 
   updateMainWithJoke(e, info) {
     info.data = EventAction.parse(e.target.response, 'json');

@@ -1,16 +1,18 @@
 import { Utils } from "./utils.js"
 import { RequestInfo } from "./requestInfo.js";
+import { EventAction } from "./event.js";
 
 export class APIAction {
   constructor(api) {
     this.baseUrl = api.baseUrl;
     this.endpoints = api.endpoints;
     this.testData = api.testData;
+    this.progressHandlers = new EventAction().progressHandlers;
   }
 
 // One method for sending all AJAX requests
 // Takes RequestInfo object and name of onload event handler
-  request(info, onload) {
+  request(info, onload, progress = false) {
     let apiAction = this.endpoints[info.action];
     let request = new XMLHttpRequest();
     let url = this.baseUrl + this.insertIds(apiAction.path, this.getIds(info.data));
@@ -22,33 +24,23 @@ export class APIAction {
         info.data = this.serialize(info.data, apiAction.dataType);
         url += info.data;
       }
-
     }
+
     request.open(apiAction.method, url);
+
+    progress ? this.showProgress(request, info) : null;
+    
     request.onload = (e) => {
       let handler = info.handlers[onload];
       handler(e, info);
     }
+
     request.send(info.data);
   }
 
-// Iterates through all endpoints and sends all GET requests with a new 
-// RequestInfo object populated with test data -- all of which comes from apis.js
-  testGetEndpoints(handler, handlerName) {
-    for (let point in this.endpoints) {
-      if (this.endpoints.hasOwnProperty(point)) {
-        if (this.endpoints[point].method === 'GET') {
-          let test = new RequestInfo();
-          test.action = point;
-          test.handlers[handlerName] = handler;
-          test.data = this.testData[point];
-          this.request(test, handlerName);
-        }
-      }
-    }
-  }
+// AJAX REQUEST HELPER METHODS
 
-// Helper method for inserting ids into request paths
+// Inserts ids into request paths
   insertIds(path, ids) {
     if (ids) {
       let replacements = ids.slice();
@@ -63,7 +55,7 @@ export class APIAction {
     return data ? data.ids : null;
   }
 
-// General helper method for serializing form data. Can add more cases as needed
+// Serializes form data. Add more dataType cases as needed
   serializeForm(data, dataType) {
     switch (dataType) {
       case 'json':
@@ -76,7 +68,7 @@ export class APIAction {
     }
   }
 
-// General helper for serializing non-form data. Can add more cases as needed
+// Serializes non-form data. Add more dataType cases as needed
   serialize(data, dataType) {
     if (!Utils.isObject(data)) {
       throw new Error('Invalid data type. Must be an object');
@@ -88,6 +80,57 @@ export class APIAction {
       case 'query':
         data = new URLSearchParams(data).toString();
         return '?' + data;
+    }
+  }
+
+// API TESTING METHODS
+
+// Iterates through all endpoints and sends all GET requests with a new 
+// RequestInfo object populated with test data -- all of which comes from apis.js
+  testGetEndpoints(handler, handlerName, progress = false) {
+    for (let point in this.endpoints) {
+      if (this.endpoints.hasOwnProperty(point)) {
+        if (this.endpoints[point].method === 'GET') {
+          let test = new RequestInfo();
+          test.action = point;
+          test.handlers[handlerName] = handler;
+          test.progressHandlers = this.progressHandlers;
+          test.data = this.testData[point];
+          this.request(test, handlerName, progress);
+        }
+      }
+    }
+  }
+
+// Log load progress events if 'progress' arg set to 'true' in testing functions
+  showProgress(request, info) {
+    request.onloadstart = (e) => {
+      let handler = info.progressHandlers['logLoadStart'];
+      handler(e);
+    }
+    request.onreadystatechange = (e) => {
+      let handler = info.progressHandlers['logLoadReadyStateChange'];
+      handler(e);
+    }
+    request.onprogress = (e) => {
+      let handler = info.progressHandlers['logLoadProgress'];
+      handler(e);
+    }
+    request.onerror = (e) => {
+      let handler = info.progressHandlers['logLoadError'];
+      handler(e);
+    }
+    request.onabort = (e) => {
+      let handler = info.progressHandlers['logLoadAbort'];
+      handler(e);
+    }
+    request.ontimeout = (e) => {
+      let handler = info.progressHandlers['logLoadTimeout'];
+      handler(e);
+    }
+    request.onloadend = (e) => {
+      let handler = info.progressHandlers['logLoadEnd'];
+      handler(e);
     }
   }
 }

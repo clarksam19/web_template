@@ -4,6 +4,5 @@ import { Utils } from "./app/utils.js";
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Application();
   const api = app.chuckNorris;
-  api.testGetEndpoints(app.handlers.logStatus, 'logStatus');
-  
+  //api.testGetEndpoints(app.handlers.logStatus, 'logStatus');
 })

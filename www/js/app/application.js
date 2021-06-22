@@ -19,11 +19,10 @@ export class Application {
 
   constructor() {
     this.chuckNorris = new APIAction(apis.chuckNorris);
-    this.eventFunctions = new EventAction();
+    this.handlers = new EventAction().handlers;
     this.templates = Handlebars.templates;
-    this.handlers = this.eventFunctions.handlers;
     this.elements = this.getElements();
-    this.bindEventHandlers(this.handlers);
+    this.bindEventHandlers(this.handlers, this.progressHandlers);
     Application.registerPartials();
     Application.registerHelpers();
     this.elementRequestInfo = {};
@@ -33,15 +32,20 @@ export class Application {
   }
 
 // Bind event handlers to app
-  bindEventHandlers(handlers) {
+  bindEventHandlers(handlers, progressHandlers) {
     for (let handler in handlers) {
+      if (Object.hasOwnProperty(handler)) {
+        handler.bind(this);
+      }
+    }
+    for (let handler in progressHandlers) {
       if (Object.hasOwnProperty(handler)) {
         handler.bind(this);
       }
     }
   }
 
-// Access all primary layout elements
+// Access all layout elements
   getElements() {
     return {
       header: document.getElementById('header'),
@@ -109,9 +113,19 @@ export class Application {
     element.innerHTML = template(info.context);
   }
 
-// Add all event listeners here
-  // ids for interpolation into request path go in info.data.ids = []
+// Helper method for sending requests upon user events
+  updateElement(info, handler) {
+    this.chuckNorris.request(info, handler);
+  }
+
+// Set all event listeners
   setEventListeners() {
+    this.getJokeFromClickOnCategoryLink();
+  }
+
+// USER EVENT LISTENERS
+
+  getJokeFromClickOnCategoryLink() {
     this.elements.sidebarLeft.onclick = (e) => {
       let info = this.elementRequestInfo.main;
       info.data = {'category': e.target.textContent.trim()};
@@ -123,8 +137,4 @@ export class Application {
     }
   }
 
-// Helper method for sending requests upon user events
-  updateElement(info, handler) {
-    this.chuckNorris.request(info, handler);
-  }
 }
