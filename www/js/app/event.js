@@ -1,4 +1,5 @@
 export class EventAction {
+// Helper method for all response data parsing. Can add more cases as needed.
   static parse(data, dataType) {
     switch (dataType) {
       case 'json':
@@ -13,6 +14,7 @@ export class EventAction {
     this.handlers = this.getHandlers();
   }
 
+// Store all event handlers for access in application
   getHandlers() {
     return {
       logStatus: this.logStatus,
@@ -21,12 +23,7 @@ export class EventAction {
     }
   }
 
-  // handler(e, template) {
-  //   let data = e.target.response;
-  //   data = EventAction.parse(data, 'json');
-  //   return data;
-  // }
-
+// Event handler for intializing layout elements that use API response data
   initElementFromResponse(e, info) {
     let template = info.templates[Object.keys(info.templates)[0]];
     let element = info.targets[Object.keys(info.targets)[0]];
@@ -35,11 +32,15 @@ export class EventAction {
     element.innerHTML = template(info.context);
   }
 
-  updateElementFromResponse(e, info) {
-    info.data = EventAction.parse(e.target.response, 'json');
-    info.context['update'] = Object.assign(info.data, info.context['update']);
-    element.innerHTML = template(info.context);
+// EVENT HANDLERS FOR TESTING
+
+// Basic example
+  logStatus(e) {
+    console.log(e.currentTarget.status);
   }
+
+
+// APPLICATION-SPECIFIC EVENT HANDLERS
 
   updateMainWithJoke(e, info) {
     info.data = EventAction.parse(e.target.response, 'json');
@@ -47,9 +48,4 @@ export class EventAction {
     let template = info.templates['main'];
     info.targets['main'].innerHTML = template(info.context);
   }
-
-  logStatus(e) {
-    console.log(e.currentTarget.status);
-  }
-  
 }
