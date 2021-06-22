@@ -1,4 +1,18 @@
-<h1>Choose a category:</h1>
-{{#each category}}
-  <a href="#">{{this}}</a>
-{{/each}}
+{{#with new}}
+    
+  {{#with ../this.update}}
+      
+    {{#with ../../this.base}}  
+      <h1>{{sidebarLeftHeading}}</h1>
+      {{#each this}}
+        <a href="#">{{this}}</a>
+      {{/each}}  
+    {{else}}
+      <h1>No text</h1>
+    {{/with}}
+  {{else}}
+    <h1>Updated Sidebar</h1>
+  {{/with}}
+{{else}}
+  <h1>New Sidebar</h1>
+{{/with}}

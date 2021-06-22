@@ -15,8 +15,9 @@ export class EventAction {
 
   getHandlers() {
     return {
-      test: this.test,
-      renderTemplateToElement: this.renderTemplateToElement,
+      logStatus: this.logStatus,
+      initElementFromResponse: this.initElementFromResponse,
+      updateMainWithJoke: this.updateMainWithJoke,
     }
   }
 
@@ -25,14 +26,29 @@ export class EventAction {
   //   data = EventAction.parse(data, 'json');
   //   return data;
   // }
-  renderTemplateToElement(e, template, contextName, element) {
-    let data = e.target.response;
-    data = EventAction.parse(data, 'json');
-    let context = {};
-    context[contextName] = data;
-    element.innerHTML = template(context);
+
+  initElementFromResponse(e, info) {
+    let template = info.templates[Object.keys(info.templates)[0]];
+    let element = info.targets[Object.keys(info.targets)[0]];
+    info.data = EventAction.parse(e.target.response, 'json');
+    info.context['base'] = Object.assign(info.data, info.context['base']);
+    element.innerHTML = template(info.context);
   }
-  test(e) {
+
+  updateElementFromResponse(e, info) {
+    info.data = EventAction.parse(e.target.response, 'json');
+    info.context['update'] = Object.assign(info.data, info.context['update']);
+    element.innerHTML = template(info.context);
+  }
+
+  updateMainWithJoke(e, info) {
+    info.data = EventAction.parse(e.target.response, 'json');
+    info.context['base']['joke'] = info.data.value;
+    let template = info.templates['main'];
+    info.targets['main'].innerHTML = template(info.context);
+  }
+
+  logStatus(e) {
     console.log(e.currentTarget.status);
   }
   
