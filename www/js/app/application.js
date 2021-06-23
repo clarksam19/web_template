@@ -161,13 +161,35 @@ export class Application {
     this.chuckNorris.request(info, handler);
   }
 
+// Select event target at id
+  isTarget(e, id) {
+    return e.target.getAttribute('id') === id;
+  }
+
+// Verify RequestInfo instance does not already contain handler and if not, add
+  addHandlerToInfo(info, handlerName) {
+    if (!info.handlers[handlerName]) {
+      info.handlers[handlerName] = this.handlers[handlerName];
+    }
+  }
+
+// Add API action to RequestInfo instance
+  addActionToInfo(info, actionName) {
+    info.action = actionName;
+  }
+
+// Add API request data to RequestInfo instance
+  addDataToInfo(info, data) {
+    info.data = data;
+  }
+
 // USER EVENT LISTENERS
 
 // Set all event listeners
   setEventListeners() {
     this.getJokeFromClickOnCategoryLink();
     this.getJokeFromClickOnSurpriseButton();
-    this.getJokeFromSearch();
+    this.getJokeFromClickOnSearchButton();
   }
 
   getJokeFromClickOnCategoryLink() {
@@ -175,13 +197,10 @@ export class Application {
       e.preventDefault();
 
       let info = this.elementRequestInfo.main;
-      info.action = 'getJokeFromCategory';
-      info.data = {'category': e.target.textContent.trim()};
-
-      if (!info.handlers['updateMainWithJoke']) {
-        info.handlers['updateMainWithJoke'] = this.handlers.updateMainWithJoke;
-      }
-
+      let data = {'category': e.target.textContent.trim()};
+      this.addActionToInfo(info, 'getJokeFromCategory')
+      this.addDataToInfo(info, data);
+      this.addHandlerToInfo(info, 'updateMainWithJoke');
       this.updateElement(info, 'updateMainWithJoke');
     }
   }
@@ -190,33 +209,25 @@ export class Application {
     this.layoutElements.sidebarRight.onclick = (e) => {
       e.preventDefault();
 
-      if (e.target.getAttribute('id') === 'surprise') {
+      if (this.isTarget(e, 'surprise')) {
         let info = this.elementRequestInfo.main;
-        info.action = 'getRandomJoke';
-
-        if (!info.handlers['updateMainWithJoke']) {
-          info.handlers['updateMainWithJoke'] = this.handlers.updateMainWithJoke;
-        }
-
+        this.addActionToInfo(info, 'getRandomJoke');
+        this.addHandlerToInfo(info, 'updateMainWithJoke');
         this.updateElement(info, 'updateMainWithJoke');
       }
     }
   }
 
-  getJokeFromSearch() {
+  getJokeFromClickOnSearchButton() {
     this.layoutElements.main.onclick = (e) => {
       e.preventDefault();
-
-      if (e.target.getAttribute('id') === 'searchSubmitButton') {
-        let info = this.elementRequestInfo.main;
-        info.action = 'textSearch';
-        console.log(e.target.previousElementSibling);
-        info.data = {'query': e.target.previousElementSibling.value.trim()};
       
-        if (!info.handlers['textSearch']) {
-          info.handlers['textSearch'] = this.handlers.updateMainWithJoke;
-        }
-
+      if (this.isTarget(e, 'searchSubmitButton')) {
+        let info = this.elementRequestInfo.main;
+        let data = {'query': e.target.previousElementSibling.value.trim()};
+        this.addActionToInfo(info, 'textSearch');
+        this.addDataToInfo(info, data);
+        this.addHandlerToInfo(info, 'textSearch');
         this.updateElement(info, 'textSearch');
       }
     }
