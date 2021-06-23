@@ -1,21 +1,28 @@
-{{#with new}}
-    
-  {{#with ../this.add}}
-      
-    {{#with ../../this.base}}  
-      <h1>{{mainHeading}}</h1>
-      <label>{{searchInputLabel}}
-        <input type="search" id="searchInput" placeholder={{searchInputPlaceholder}}>
-        <button type="submit" id="searchSubmitButton">Hit me!</button>
-      </label>
-      <p>{{joke}}</p>
-    {{else}}
-      <h1>No text</h1>
-    {{/with}}
-  {{else}}
-    <h1>Added to Main</h1>
-  {{/with}}
+{{#if (is new)}}
+  {{log 'new'}}
 {{else}}
-  <h1>New Main</h1>
-{{/with}}
+  {{#if (is base)}}
+    <h1 class="mainHeader">{{base.mainHeader}}</h1>
+    <label class="mainSearch">{{base.searchInputLabel}}
+      <input type="search" id="searchInput" class="mainSearchInput" placeholder={{base.searchInputPlaceholder}}>
+      <button type="submit" id="searchSubmitButton" class="mainSearchSubmit">Hit me!</button>
+    </label>
+  {{else}}
+    {{log 'Load Error. Base context is empty'}}
+  {{/if}}
+  {{#if (is add)}}
+    {{#if add.searchResults}}
+      <ul class="searchResults"></ul>
+      {{#each add.searchResults}}
+        <li class="searchResult">{{this}}</li>
+      {{/each}}
+      </ul>
+    {{/if}}
+    {{#if (is add.joke)}}
+      <p id="mainResult" class="mainResult">{{add.joke}}</p>
+    {{/if}}
+  {{/if}}
+{{/if}}
+
+    
 

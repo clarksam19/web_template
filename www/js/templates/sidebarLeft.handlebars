@@ -1,18 +1,19 @@
-{{#with new}}
-    
-  {{#with ../this.add}}
-      
-    {{#with ../../this.base}}  
-      <h1>{{sidebarLeftHeading}}</h1>
-      {{#each this}}
-        <a href="#">{{this}}</a>
-      {{/each}}  
-    {{else}}
-      <h1>No text</h1>
-    {{/with}}
-  {{else}}
-    <h1>Added to Sidebar</h1>
-  {{/with}}
+{{#if (is new)}}
+  
 {{else}}
-  <h1>New Sidebar</h1>
-{{/with}}
+  {{#if (is base)}}
+    <h1 class="sidebarLeftHeader">{{base.sidebarLeftHeader}}</h1>
+    <ul class="categoryChoices">
+      {{#each base}}
+        <li class="categoryChoice"><a href="#" id="categoryChoice">{{this}}</a></li>
+      {{/each}} 
+    </ul>
+  {{else}}
+    {{log 'Load Error. Base context is empty'}}
+  {{/if}}
+  {{#if (is add)}}
+  
+  {{/if}}
+{{/if}}
+
+

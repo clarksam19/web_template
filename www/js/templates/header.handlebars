@@ -1,16 +1,13 @@
-{{#with new}}
-    
-  {{#with ../this.add}}
-      
-    {{#with ../../this.base}}  
-      <h1>{{title}}</h1>
-      <h2>{{subtitle}}</h2>
-    {{else}}
-      <h1>No text</h1>
-    {{/with}}
-  {{else}}
-    <h1>Added to Header</h1>
-  {{/with}}
+{{#if (is new)}}
+  
 {{else}}
-  <h1>New Header</h1>
-{{/with}}
+  {{#if (is base)}}
+    <h1 class="title">{{base.title}}</h1>
+    <h2 class="subtitle">{{base.subtitle}}</h2>
+  {{else}}
+    {{log 'Load Error. Base context is empty'}}
+  {{/if}}
+  {{#if (is add)}}
+  
+  {{/if}}
+{{/if}}

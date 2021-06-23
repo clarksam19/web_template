@@ -1,0 +1,203 @@
+/* LAYOUT ELEMENT SELF POSITIONING */
+
+.header {
+
+}
+
+.main {
+
+}
+
+.mainSearch {
+
+}
+
+.sidebarLeft {
+
+}
+
+.sidebarRight {
+
+}
+
+.footer {
+
+}
+
+/* LAYOUT ELEMENT CHILD POSITIONING */
+
+/* header and children */
+.header {
+  gap: 10px; /* <row gap> <column gap> | both */
+
+  /* align content as a whole */
+  place-content: center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* align individual items within their respective grid cells */
+  place-items: center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* control auto-placement of items not explicitly placed with:
+    row: fill in each row in turn, adding new rows as necessary
+    column: fill in each column in turn, adding new columns as necessary
+    dense: fill in holes earlier in the grid if smaller items come up later (changes visual, but not logical order) */
+    grid-auto-flow: row; /* -> default: row */
+
+  /* specify size of auto generated rows or columns */
+  /* grid-auto-rows: ;
+  grid-auto-columns: ; */
+}
+
+.title {
+  
+}
+
+.subtitle {
+
+}
+
+/* main and children */
+.main {
+  gap: 0px; /* <row gap> <column gap> | both */
+
+  /* align content as a whole */
+  place-content: center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* align individual items within their respective grid cells */
+  place-items: top center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* control auto-placement of items not explicitly placed with:
+    row: fill in each row in turn, adding new rows as necessary
+    column: fill in each column in turn, adding new columns as necessary
+    dense: fill in holes earlier in the grid if smaller items come up later (changes visual, but not logical order) */
+  grid-auto-flow: row; /* -> default: row */
+
+  /* specify size of auto generated rows or columns */
+  /* grid-auto-rows: ;
+  grid-auto-columns: ; */
+}
+
+.mainHeader {
+  
+}
+
+.mainSearch {
+
+}
+
+.mainResult {
+
+}
+
+.mainSearchInput {
+
+}
+
+.mainSearchSubmit {
+
+}
+
+/* left sidebar and children */
+.sidebarLeft {
+  gap: 10px; /* <row gap> <column gap> | both */
+
+  /* align content as a whole */
+  place-content: center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* align individual items within their respective grid cells */
+  place-items: end; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* control auto-placement of items not explicitly placed with:
+    row: fill in each row in turn, adding new rows as necessary
+    column: fill in each column in turn, adding new columns as necessary
+    dense: fill in holes earlier in the grid if smaller items come up later (changes visual, but not logical order) */
+  grid-auto-flow: row; /* -> default: row */
+
+  /* specify size of auto generated rows or columns */
+  /* grid-auto-rows: ;
+  grid-auto-columns: ; */
+}
+
+.sidebarLeftHeader {
+
+}
+
+.categoryChoices {
+
+}
+
+/* right sidebar and children */
+.sidebarRight {
+  gap: 10px; /* <row gap> <column gap> | both */
+
+  /* align content as a whole */
+  place-content: start; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* align individual items within their respective grid cells */
+  place-items: start; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* control auto-placement of items not explicitly placed with:
+    row: fill in each row in turn, adding new rows as necessary
+    column: fill in each column in turn, adding new columns as necessary
+    dense: fill in holes earlier in the grid if smaller items come up later (changes visual, but not logical order) */
+  grid-auto-flow: row; /* -> default: row */
+
+  /* specify size of auto generated rows or columns */
+  /* grid-auto-rows: ;
+  grid-auto-columns: ; */
+}
+
+.sidebarRightHeader {
+
+}
+
+.surprise {
+
+}
+
+/* footer and children */
+.footer {
+  gap: 10px; /* <row gap> <column gap> | both */
+
+  /* align content as a whole */
+  place-content: center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* align individual items within their respective grid cells */
+  place-items: center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* control auto-placement of items not explicitly placed with:
+    row: fill in each row in turn, adding new rows as necessary
+    column: fill in each column in turn, adding new columns as necessary
+    dense: fill in holes earlier in the grid if smaller items come up later (changes visual, but not logical order) */
+  grid-auto-flow: row; /* -> default: row */
+
+  /* specify size of auto generated rows or columns */
+  /* grid-auto-rows: ;
+  grid-auto-columns: ; */
+}
+
+.tagline {
+  
+}
+
+/* SUB LAYOUT ELEMENT CHILD POSITIONING */
+
+/* mainSearch and children */
+.mainSearch {
+  gap: 0px; /* <row gap> <column gap> | both */
+
+  /* align content as a whole */
+  place-content: top center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* align individual items within their respective grid cells */
+  place-items: top center; /* <column axis> <row axis> | both -> default: stretch */
+
+  /* control auto-placement of items not explicitly placed with:
+    row: fill in each row in turn, adding new rows as necessary
+    column: fill in each column in turn, adding new columns as necessary
+    dense: fill in holes earlier in the grid if smaller items come up later (changes visual, but not logical order) */
+  grid-auto-flow: row; /* -> default: row */
+
+  /* specify size of auto generated rows or columns */
+  /* grid-auto-rows: ;
+  grid-auto-columns: ; */
+}

@@ -15,6 +15,11 @@ export class Application {
 
   static registerHelpers() {
     // Register custom Handlebars helpers here
+    Handlebars.registerHelper('is', (context) => {
+      if (context) {
+        return Object.keys(context).length > 0;
+      }
+    })
   }
 
   constructor() {
@@ -38,16 +43,9 @@ export class Application {
 
 // Bind event handlers to application
   bindEventHandlers(handlers, progressHandlers) {
-    for (let handler in handlers) {
-      if (Object.hasOwnProperty(handler)) {
-        handler.bind(this);
-      }
-    }
-    for (let handler in progressHandlers) {
-      if (Object.hasOwnProperty(handler)) {
-        handler.bind(this);
-      }
-    }
+    let bind = (handler) => handler.bind(this);
+    Utils.forOwnIn(handlers, bind);
+    Utils.forOwnIn(progressHandlers, bind);
   }
 
 // Access layout elements
@@ -67,6 +65,7 @@ export class Application {
       surpriseBtn: document.getElementById('surprise'),
       searchInput: document.getElementById('searchInput'),
       searchSubmitButton: document.getElementById('searchSubmitButton'),
+      mainResult: document.getElementById('mainResult'),
     }
   }
 
@@ -81,17 +80,16 @@ export class Application {
 
 // Initialize layout elements
   initLayoutElements() {
-    let app = this.chuckNorris;
+    let api = this.chuckNorris;
 
-    let sidebarLeftContext = {'sidebarLeftHeading': 'Choose a category:'};
-    this.initLayoutElementWithRequest('sidebarLeft', sidebarLeftContext, app, 'getCategories');
+    let sidebarLeftContext = {'sidebarLeftHeader': 'Choose a category:'};
+    this.initLayoutElementWithRequest('sidebarLeft', sidebarLeftContext, api, 'getCategories');
 
     let sidebarRightContext = {'text': 'Chuck Norris'};
     this.initLayoutElement('sidebarRight', sidebarRightContext);
     
     let mainContext = {
-      'mainHeading': 'Meticulously curated joke',
-      'joke': 'Joke goes here',
+      'mainHeader': 'Meticulously curated joke',
     };
     this.initLayoutElement('main', mainContext);
 
@@ -112,7 +110,7 @@ export class Application {
 
       let searchInputContext = {
         'searchInputPlaceholder': 'Search',
-        'searchInputLabel': 'Search for a joke',
+        'searchInputLabel': 'Search for a joke:',
       };
       this.initSubElement('main', searchInputContext);
     }
@@ -120,14 +118,14 @@ export class Application {
 // INITIALIZATION HELPER METHODS
 
 // Initialize layout element with AJAX response data
-  initLayoutElementWithRequest(name, context, app, action) {
+  initLayoutElementWithRequest(name, context, api, action) {
     let info = this.elementRequestInfo[name];
     info.action = action;
     info.handlers.initElementFromResponse = this.handlers.initElementFromResponse;
     info.targets[name] = this.layoutElements[name];
     info.templates[name] = this.templates[name];
     info.context.base = context;
-    app.request(info, 'initElementFromResponse');
+    api.request(info, 'initElementFromResponse');
   }
 
 // Locally initialize layout element
@@ -156,7 +154,7 @@ export class Application {
 
 // USER EVENT HELPER METHODS
 
-// Send APIAction request upon user event
+// Initiate APIAction request with RequestInfo and handler
   updateElement(info, handler) {
     this.chuckNorris.request(info, handler);
   }
@@ -196,12 +194,14 @@ export class Application {
     this.layoutElements.sidebarLeft.onclick = (e) => {
       e.preventDefault();
 
-      let info = this.elementRequestInfo.main;
-      let data = {'category': e.target.textContent.trim()};
-      this.addActionToInfo(info, 'getJokeFromCategory')
-      this.addDataToInfo(info, data);
-      this.addHandlerToInfo(info, 'updateMainWithJoke');
-      this.updateElement(info, 'updateMainWithJoke');
+      if (this.isTarget(e, 'categoryChoice')) {
+        let info = this.elementRequestInfo.main;
+        let data = {'category': e.target.textContent.trim()};
+        this.addActionToInfo(info, 'getJokeFromCategory')
+        this.addDataToInfo(info, data);
+        this.addHandlerToInfo(info, 'updateMainJokeFromClickOnCategory');
+        this.updateElement(info, 'updateMainJokeFromClickOnCategory');
+      }
     }
   }
 
@@ -212,8 +212,8 @@ export class Application {
       if (this.isTarget(e, 'surprise')) {
         let info = this.elementRequestInfo.main;
         this.addActionToInfo(info, 'getRandomJoke');
-        this.addHandlerToInfo(info, 'updateMainWithJoke');
-        this.updateElement(info, 'updateMainWithJoke');
+        this.addHandlerToInfo(info, 'updateMainJokeFromSurpriseBtn');
+        this.updateElement(info, 'updateMainJokeFromSurpriseBtn');
       }
     }
   }
@@ -225,10 +225,11 @@ export class Application {
       if (this.isTarget(e, 'searchSubmitButton')) {
         let info = this.elementRequestInfo.main;
         let data = {'query': e.target.previousElementSibling.value.trim()};
+        info.targets.mainResult = this.subElements.mainResult;
         this.addActionToInfo(info, 'textSearch');
         this.addDataToInfo(info, data);
-        this.addHandlerToInfo(info, 'textSearch');
-        this.updateElement(info, 'textSearch');
+        this.addHandlerToInfo(info, 'updateMainJokeFromSearch');
+        this.updateElement(info, 'updateMainJokeFromSearch');
       }
     }
   }

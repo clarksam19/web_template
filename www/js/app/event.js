@@ -1,3 +1,5 @@
+import { Utils } from "./utils.js";
+
 export class EventAction {
 // Helper method for all response data parsing. Can add more cases as needed.
   static parse(data, dataType) {
@@ -20,7 +22,9 @@ export class EventAction {
     return {
       logStatus: this.logStatus,
       initElementFromResponse: this.initElementFromResponse,
-      updateMainWithJoke: this.updateMainWithJoke,
+      updateMainJokeFromSurpriseBtn: this.updateMainJokeFromSurpriseBtn,
+      updateMainJokeFromSearch: this.updateMainJokeFromSearch,
+      updateMainJokeFromClickOnCategory: this.updateMainJokeFromClickOnCategory,
     }
   }
 
@@ -41,7 +45,7 @@ export class EventAction {
     let template = info.templates[Object.keys(info.templates)[0]];
     let element = info.targets[Object.keys(info.targets)[0]];
     info.data = EventAction.parse(e.target.response, 'json');
-    info.context['base'] = Object.assign(info.data, info.context['base']);
+    info.context.base = Object.assign(info.data, info.context.base);
     element.innerHTML = template(info.context);
   }
 
@@ -85,16 +89,38 @@ export class EventAction {
 
 // ONLOAD EVENT HANDLERS
 
-  updateMainWithJoke(e, info) {
-    let template = info.templates['main'];
+  updateMainJokeFromSurpriseBtn(e, info) {
+    let template = info.templates.main;
+    let response = EventAction.parse(e.target.response, 'json');
+    info.data = response;
+    info.context.add.joke = info.data.value;
+    info.targets.main.innerHTML = template(info.context);
+    info.data = null;
+    info.context.new = {};
+  }
 
-    if (e.target.response.value) {
-      info.data = EventAction.parse(e.target.response, 'json');
-    } else {
-      info.data = {'value': "Just kidding, this search function really sucks..."};
+  updateMainJokeFromSearch(e, info) {
+    let template = info.templates.main;
+    let response = EventAction.parse(e.target.response, 'json');
+    info.data = response;
+    let jokesArr = [];
+    let getJokes = function(jokes) {
+      jokesArr.push(jokes.value);
     }
-    
-    info.context['base']['joke'] = info.data.value;
-    info.targets['main'].innerHTML = template(info.context);
+    Utils.forOwnIn(info.data.result, getJokes);
+    info.context.add.searchResults = jokesArr.slice(0, 3);
+    info.targets.main.innerHTML = template(info.context);
+    info.data = null;
+    info.context.add = {};
+  }
+
+  updateMainJokeFromClickOnCategory(e, info) {
+    let template = info.templates.main;
+    let response = EventAction.parse(e.target.response, 'json');
+    info.data = response;
+    info.context.add.joke = info.data.value;
+    info.targets.main.innerHTML = template(info.context);
+    info.data = null;
+    info.context.add = {};
   }
 }

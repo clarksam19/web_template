@@ -1,15 +1,12 @@
-{{#with new}}
-    
-  {{#with ../this.add}}
-      
-    {{#with ../../this.base}}  
-      <p>{{tagline}}</p>
-    {{else}}
-      <h1>No text</h1>
-    {{/with}}
-  {{else}}
-    <h1>Added to Footer</h1>
-  {{/with}}
+{{#if (is new)}}
+  
 {{else}}
-  <h1>New Footer</h1>
-{{/with}}
+  {{#if (is base)}}
+    <p class="tagline">{{base.tagline}}</p>
+  {{else}}
+    {{log 'Load Error. Base context is empty'}}
+  {{/if}}
+  {{#if (is add)}}
+  
+  {{/if}}
+{{/if}}

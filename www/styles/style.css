@@ -1,4 +1,8 @@
+/* LAYOUT */
 @import url(./layout.css);
+
+/* ELEMENT POSITIONING */
+@import url(./positioning.css);
 
 /* MASTER STYLING */
 @import url(./whitespace-reset.css);
@@ -12,7 +16,71 @@ html {
   box-sizing: inherit;
 }
 
-/* SUBSECTION STYLING */
+/* LAYOUT ELEMENT STYLING */
 
+.header {
 
+}
 
+.main {
+
+}
+
+.sidebarLeft {
+
+}
+
+.sidebarRight {
+
+}
+
+.footer {
+
+}
+
+/* NON-LAYOUT ELEMENT STYLING */
+
+/* header children */
+.title {
+
+}
+
+.subtitle {
+
+}
+
+/* main children */
+.mainHeader {
+
+}
+
+.mainSearch {
+
+}
+
+.mainResult {
+
+}
+
+/* left sidebar children */
+.sidebarLeftHeader {
+
+}
+
+.categoryChoices {
+
+}
+
+/* right sidebar children */
+.sidebarRightHeader {
+
+}
+
+.surprise {
+
+}
+
+/* footer children */
+.tagline {
+  
+}

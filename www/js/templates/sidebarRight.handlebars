@@ -1,16 +1,13 @@
-{{#with new}}
-    
-  {{#with ../this.add}}
-      
-    {{#with ../../this.base}}  
-      <h1>{{text}}</h1>
-      <button id="surprise">{{surprise}}</button> 
-    {{else}}
-      <h1>No text</h1>
-    {{/with}}
-  {{else}}
-    <h1>Added To Sidebar</h1>
-  {{/with}}
+{{#if (is new)}}
+  
 {{else}}
-  <h1>New Sidebar</h1>
-{{/with}}
+  {{#if (is base)}}
+    <h1 class="sidebarRightHeader">{{base.text}}</h1>
+    <button id="surprise" class="surprise">{{base.surprise}}</button> 
+  {{else}}
+    {{log 'Load Error. Base context is empty'}}
+  {{/if}}
+  {{#if (is add)}}
+  
+  {{/if}}
+{{/if}}
