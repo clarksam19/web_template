@@ -21,17 +21,22 @@ export class Application {
     this.chuckNorris = new APIAction(apis.chuckNorris);
     this.handlers = new EventAction().handlers;
     this.templates = Handlebars.templates;
-    this.elements = this.getElements();
-    this.bindEventHandlers(this.handlers, this.progressHandlers);
     Application.registerPartials();
     Application.registerHelpers();
+    this.bindEventHandlers(this.handlers, this.progressHandlers);
     this.elementRequestInfo = {};
-    this.initElementRequestInfo();
-    this.initElements();
+    this.layoutElements = this.getLayoutElements();
+    this.initElementRequestInfo(this.layoutElements);
+    this.initLayoutElements();
+    this.subElements = this.getSubElements();
+    this.initElementRequestInfo(this.subElements);
+    this.initSubElements();
     this.setEventListeners();
   }
 
-// Bind event handlers to app
+// INITIALIZATION METHODS
+
+// Bind event handlers to application
   bindEventHandlers(handlers, progressHandlers) {
     for (let handler in handlers) {
       if (Object.hasOwnProperty(handler)) {
@@ -45,8 +50,8 @@ export class Application {
     }
   }
 
-// Access all layout elements
-  getElements() {
+// Access layout elements
+  getLayoutElements() {
     return {
       header: document.getElementById('header'),
       sidebarLeft: document.getElementById('sidebarLeft'),
@@ -56,84 +61,164 @@ export class Application {
     }
   }
 
-// Add RequestInfo object to all primary layout elements
-  initElementRequestInfo() {
-    for (let element in this.elements) {
-      if (this.elements.hasOwnProperty(element)) {
+// Access sub elements
+  getSubElements() {
+    return {
+      surpriseBtn: document.getElementById('surprise'),
+      searchInput: document.getElementById('searchInput'),
+      searchSubmitButton: document.getElementById('searchSubmitButton'),
+    }
+  }
+
+// Add RequestInfo object to elements
+  initElementRequestInfo(elementCollection) {
+    for (let element in elementCollection) {
+      if (elementCollection.hasOwnProperty(element)) {
         this.elementRequestInfo[element] = new RequestInfo(); // --> see requestInfo.js
       }
     }
   }
 
-// Initialize primary layout elements with the appropriate RequestInfo values
-  initElements() {
-    let sidebarLeftInfo = this.elementRequestInfo.sidebarLeft;
-    sidebarLeftInfo.action = 'getCategories';
-    sidebarLeftInfo.handlers['initElementFromResponse'] = this.handlers.initElementFromResponse;
-    sidebarLeftInfo.targets['sidebarLeft'] = this.elements.sidebarLeft;
-    sidebarLeftInfo.templates['sidebarLeft'] = this.templates.sidebarLeft;
-    sidebarLeftInfo.context['base'] = {'sidebarLeftHeading': 'Choose a category:'};
-    this.chuckNorris.request(sidebarLeftInfo, 'initElementFromResponse');
+// Initialize layout elements
+  initLayoutElements() {
+    let app = this.chuckNorris;
 
-    let sidebarRightInfo = this.elementRequestInfo.sidebarRight;
-    sidebarRightInfo.targets['sidebarRight'] = this.elements.sidebarRight;
-    sidebarRightInfo.templates['sidebarRight'] = this.templates.sidebarRight;
-    sidebarRightInfo.context['base'] = {'text': 'Chuck Norris'};
-    this.initElement(sidebarRightInfo, 'sidebarRight');
+    let sidebarLeftContext = {'sidebarLeftHeading': 'Choose a category:'};
+    this.initLayoutElementWithRequest('sidebarLeft', sidebarLeftContext, app, 'getCategories');
 
-    let mainInfo = this.elementRequestInfo.main;
-    mainInfo.targets['main'] = this.elements.main;
-    mainInfo.templates['main'] = this.templates.main;
-    mainInfo.context['base'] = {
+    let sidebarRightContext = {'text': 'Chuck Norris'};
+    this.initLayoutElement('sidebarRight', sidebarRightContext);
+    
+    let mainContext = {
       'mainHeading': 'Meticulously curated joke',
       'joke': 'Joke goes here',
-     };
-    this.initElement(mainInfo, 'main');
+    };
+    this.initLayoutElement('main', mainContext);
 
-    let headerInfo = this.elementRequestInfo.header;
-    headerInfo.targets['header'] = this.elements.header;
-    headerInfo.templates['header'] = this.templates.header;
-    headerInfo.context['base'] = {
+    let headerContext = {
       'title': 'Chuck Norris Jokes',
       'subtitle': 'Your One-Stop Shop for Chuck Norris Related Humor',
     };
-    this.initElement(headerInfo, 'header');
-
-    let footerInfo = this.elementRequestInfo.footer;
-    footerInfo.targets['footer'] = this.elements.footer;
-    footerInfo.templates['footer'] = this.templates.footer;
-    footerInfo.context['base'] = {'tagline': 'Brought to you by Sam Clark'};
-    this.initElement(footerInfo, 'footer');
+    this.initLayoutElement('header', headerContext);
+    
+    let footerContext = {'tagline': 'Brought to you by Sam Clark'};
+    this.initLayoutElement('footer', footerContext);
   }
 
-// Helper method for locally initializing layout elements
+  // Initialize sub elements using parent element name
+    initSubElements() {
+      let surpriseBtnContext = {'surprise': 'Surprise me'};
+      this.initSubElement('sidebarRight', surpriseBtnContext);
+
+      let searchInputContext = {
+        'searchInputPlaceholder': 'Search',
+        'searchInputLabel': 'Search for a joke',
+      };
+      this.initSubElement('main', searchInputContext);
+    }
+
+// INITIALIZATION HELPER METHODS
+
+// Initialize layout element with AJAX response data
+  initLayoutElementWithRequest(name, context, app, action) {
+    let info = this.elementRequestInfo[name];
+    info.action = action;
+    info.handlers.initElementFromResponse = this.handlers.initElementFromResponse;
+    info.targets[name] = this.layoutElements[name];
+    info.templates[name] = this.templates[name];
+    info.context.base = context;
+    app.request(info, 'initElementFromResponse');
+  }
+
+// Locally initialize layout element
+  initLayoutElement(name, context) {
+    let info = this.elementRequestInfo[name];
+    info.targets[name] = this.layoutElements[name];
+    info.templates[name] = this.templates[name];
+    info.context.base = context;
+    this.initElement(info, name);
+  }
+
+// Locally initialize sub element 
+  initSubElement(parentName, context) {
+    let info = this.elementRequestInfo[parentName];
+    info.targets[parentName] = this.layoutElements[parentName];
+    info.context.base = Object.assign(context, info.context.base);
+    this.initElement(info);
+  }
+
+// Pass context to template
   initElement(info) {
     let element = info.targets[Object.keys(info.targets)[0]];
     let template = info.templates[Object.keys(info.templates)[0]];
     element.innerHTML = template(info.context);
   }
 
-// Helper method for sending requests upon user events
+// USER EVENT HELPER METHODS
+
+// Send APIAction request upon user event
   updateElement(info, handler) {
     this.chuckNorris.request(info, handler);
   }
 
+// USER EVENT LISTENERS
+
 // Set all event listeners
   setEventListeners() {
     this.getJokeFromClickOnCategoryLink();
+    this.getJokeFromClickOnSurpriseButton();
+    this.getJokeFromSearch();
   }
 
-// USER EVENT LISTENERS
-
   getJokeFromClickOnCategoryLink() {
-    this.elements.sidebarLeft.onclick = (e) => {
+    this.layoutElements.sidebarLeft.onclick = (e) => {
+      e.preventDefault();
+
       let info = this.elementRequestInfo.main;
-      info.data = {'category': e.target.textContent.trim()};
       info.action = 'getJokeFromCategory';
+      info.data = {'category': e.target.textContent.trim()};
+
       if (!info.handlers['updateMainWithJoke']) {
         info.handlers['updateMainWithJoke'] = this.handlers.updateMainWithJoke;
       }
+
       this.updateElement(info, 'updateMainWithJoke');
+    }
+  }
+
+  getJokeFromClickOnSurpriseButton() {
+    this.layoutElements.sidebarRight.onclick = (e) => {
+      e.preventDefault();
+
+      if (e.target.getAttribute('id') === 'surprise') {
+        let info = this.elementRequestInfo.main;
+        info.action = 'getRandomJoke';
+
+        if (!info.handlers['updateMainWithJoke']) {
+          info.handlers['updateMainWithJoke'] = this.handlers.updateMainWithJoke;
+        }
+
+        this.updateElement(info, 'updateMainWithJoke');
+      }
+    }
+  }
+
+  getJokeFromSearch() {
+    this.layoutElements.main.onclick = (e) => {
+      e.preventDefault();
+
+      if (e.target.getAttribute('id') === 'searchSubmitButton') {
+        let info = this.elementRequestInfo.main;
+        info.action = 'textSearch';
+        console.log(e.target.previousElementSibling);
+        info.data = {'query': e.target.previousElementSibling.value.trim()};
+      
+        if (!info.handlers['textSearch']) {
+          info.handlers['textSearch'] = this.handlers.updateMainWithJoke;
+        }
+
+        this.updateElement(info, 'textSearch');
+      }
     }
   }
 

@@ -82,12 +82,19 @@ export class EventAction {
     console.log('Load Has Ended');
     console.log(e);
   }
+
 // ONLOAD EVENT HANDLERS
 
   updateMainWithJoke(e, info) {
-    info.data = EventAction.parse(e.target.response, 'json');
-    info.context['base']['joke'] = info.data.value;
     let template = info.templates['main'];
+
+    if (e.target.response.value) {
+      info.data = EventAction.parse(e.target.response, 'json');
+    } else {
+      info.data = {'value': "Just kidding, this search function really sucks..."};
+    }
+    
+    info.context['base']['joke'] = info.data.value;
     info.targets['main'].innerHTML = template(info.context);
   }
 }

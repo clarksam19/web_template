@@ -1,17 +1,21 @@
 {{#with new}}
     
-  {{#with ../this.update}}
+  {{#with ../this.add}}
       
     {{#with ../../this.base}}  
       <h1>{{mainHeading}}</h1>
+      <label>{{searchInputLabel}}
+        <input type="search" id="searchInput" placeholder={{searchInputPlaceholder}}>
+        <button type="submit" id="searchSubmitButton">Hit me!</button>
+      </label>
       <p>{{joke}}</p>
     {{else}}
       <h1>No text</h1>
     {{/with}}
   {{else}}
-    <h1>Updated Sidebar</h1>
+    <h1>Added to Main</h1>
   {{/with}}
 {{else}}
-  <h1>New Sidebar</h1>
+  <h1>New Main</h1>
 {{/with}}
 

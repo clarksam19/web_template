@@ -1,6 +1,6 @@
 {{#with new}}
     
-  {{#with ../this.update}}
+  {{#with ../this.add}}
       
     {{#with ../../this.base}}  
       <h1>{{sidebarLeftHeading}}</h1>
@@ -11,7 +11,7 @@
       <h1>No text</h1>
     {{/with}}
   {{else}}
-    <h1>Updated Sidebar</h1>
+    <h1>Added to Sidebar</h1>
   {{/with}}
 {{else}}
   <h1>New Sidebar</h1>
